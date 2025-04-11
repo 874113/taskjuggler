@@ -1,3 +1,4 @@
+
 /*
  * This file contains the practice 5 source code corresponding with the 
  * project planification using TaskJuggler in the "Proyecto Software" course.
@@ -5,7 +6,7 @@
  * some elements of it
  */
 
-project pSix "Web Game"  2024-12-15 +5m {
+project pSix "Web Game"  2024-12-15 +6m {
   # Set the default time zone for the project. If not specified, UTC
   # is used.
   timezone "Europe/Paris"
@@ -19,7 +20,7 @@ project pSix "Web Game"  2024-12-15 +5m {
   # the project reports. If not specified, the current day will be
   # used, but this will likely be outside of the project range, so it
   # can't be seen in the reports.
-  now 2025-04-11-15:00
+  now 2025-04-11-16:00
   # The currency for all money values is the US Dollar.
   currency "EUR"
 
@@ -68,10 +69,10 @@ resource dev2 "Samantha Müller" {
 resource dev3 "Peter Green" {
   email "kkk@unizar.es"
 }
-resource you "Alex" {
+
+resource alex "Alex Gimenez" {
+  workinghours mon - fri 16:00 - 20:00
   email "874113@unizar.es"
-  workinghours mon - fri 08:00 - 12:00
-  rate 90
 }
 
 # Now we specify the work packages. The whole project is described as
@@ -128,24 +129,21 @@ task WMGame "Web & Mobile Game" {
   task tmobileF "Mobile Front End" {
     purge chargeset
     chargeset mFront
-    responsible dev4
-    depends WMGame.tGUId
-
-    task tmGUId "Mobile GUI Design" {
+    responsible alex
+    depends WMGame.tback.tBEd
+    task tmobileGUId "Mobile GUI Design" {
       effort 6d
-      allocate dev3
+      allocate alex
     }
-
-    task tmFEc "Mobile Front End Construction" {
+    task tmovileFEc "Mobile Front End Construction" {
       effort 10d
-      allocate dev3, you
-      depends WMGame.tmobileF.tmGUId
+      allocate alex
+      depends WMGame.tmobF.tmobileGUId
     }
-
-    task tmFEt "Mobile Front End Test" {
+    task tmobileFEt "Mobile Front End Test" {
       effort 5d
-      allocate dev1
-      depends WMGame.tmobileF.tmFEc
+      allocate alex
+      depends WMGame.tmobF.tmovileFEc
     }
   }
 
@@ -168,22 +166,35 @@ task WMGame "Web & Mobile Game" {
       effort 15d
       allocate dev2, dev3
       depends WMGame.twebF.tGUId
+      journalentry 2025-04-11 "Delayed integration with backend" {
+        author dev2
+        alert yellow
+        summary "Integration with backend was delayed due to unexpected API changes. Will need to reschedule some tests."
+      }
     }
     task tFEt "Web Front End Test" {
       effort 6d
       allocate dev1
       depends WMGame.twebF.tFEc
-      journalentry 2025-04-11 "Revisión de diseño móvil" {
-        author you
-        alert green
-        summary "Hoy se ha revisado el diseño móvil con mejoras propuestas para navegación táctil."
-      }
+    }    
+  }
+
+  task tcloud "Cloud Deployment" {
+    effort 5d
+    allocate dev1
+    depends WMGame.tback.tbackDev
+    task tcloudDecision "Cloud decision and evaluation" {
+      effort 5d
+      allocate dev1
+    }
+    task tcloudDeploy "Cloud deploy" {
+      effort 9d
+      allocate dev1
+      depends WMGame.tcloud.tcloudDeploy
     }
   }
 
   task ttest "Acceptance tests" {
-      purge chargeset
-      chargeset manag
       effort 10d
       allocate boss
       allocate dev2
@@ -191,8 +202,8 @@ task WMGame "Web & Mobile Game" {
       start 2025-05-15
       depends WMGame.twebF
       depends WMGame.tback
-      depends WMGame.tmobileF
-      depends WMGame.tCloud
+      depends WMGame.tmobF
+      depends WMGame.tcloud
       }
 
     
@@ -219,23 +230,6 @@ task WMGame "Web & Mobile Game" {
     task done "Ship Product to Customer" {
       depends WMGame.ttest
       charge 12000.0 onstart
-    }
-  }
-
-  task tCloud "Cloud Deployment" {
-    chargeset back
-    responsible dev1
-    depends WMGame.tback.tbackDev
-
-    task tCloudEval "Cloud Provider Evaluation" {
-      effort 3d
-      allocate boss
-    }
-
-    task tCloudSet "Cloud Setup and Deployment" {
-      effort 6d
-      allocate dev1, you
-      depends WMGame.tCloud.tCloudEval
     }
   }
 }
@@ -373,6 +367,14 @@ taskreport status "" {
   }
 }
 
+taskreport initial_planification "Initial Planification" {
+  formats html
+  headline "Planificación Inicial"
+  columns bsi, name, start, end, effort
+  loadunit hours
+  timeformat "%d-%m-%Y"
+}
+
 # A list of tasks showing the resources assigned to each task.
 taskreport development "" {
   scenarios actual
@@ -408,13 +410,3 @@ resourcereport resourceGraph "" {
   hidetask ~(isleaf() & isleaf_())
   sorttasks plan.start.up
 }
-
-taskreport initialplan "" {
-  headline "Initial Baseline Plan"
-  scenarios plan
-  columns bsi, name, start, end, effort, chart
-  caption 'Planificación inicial basada en el escenario plan.'
-}
-
-
-
