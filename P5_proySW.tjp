@@ -183,7 +183,7 @@ task WMGame "Web & Mobile Game" {
 
   task ttest "Acceptance tests" {
       purge chargeset
-      chargeset cost
+      chargeset manag
       effort 10d
       allocate boss
       allocate dev2
