@@ -180,7 +180,6 @@ task WMGame "Web & Mobile Game" {
   }
 
   task tcloud "Cloud Deployment" {
-    effort 5d
     allocate dev1
     depends WMGame.tback.tbackDev
     task tcloudDecision "Cloud decision and evaluation" {
