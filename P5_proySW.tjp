@@ -202,7 +202,7 @@ task WMGame "Web & Mobile Game" {
       start 2025-05-15
       depends WMGame.twebF
       depends WMGame.tback
-      depends WMGame.tmobF
+      depends WMGame.tmobileF
       depends WMGame.tcloud
       }
 
