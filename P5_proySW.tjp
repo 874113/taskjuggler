@@ -132,16 +132,16 @@ task WMGame "Web & Mobile Game" {
     responsible alex
     depends WMGame.tback.tBEd
     task tmobileGUId "Mobile GUI Design" {
-      effort 6d
+      effort 4d
       allocate alex
     }
     task tmovileFEc "Mobile Front End Construction" {
-      effort 10d
+      effort 8d
       allocate alex
       depends WMGame.tmobileF.tmobileGUId
     }
     task tmobileFEt "Mobile Front End Test" {
-      effort 5d
+      effort 7d
       allocate alex
       depends WMGame.tmobileF.tmovileFEc
     }
@@ -184,13 +184,13 @@ task WMGame "Web & Mobile Game" {
     allocate dev1
     depends WMGame.tback.tbackDev
     task tcloudDecision "Cloud decision and evaluation" {
-      effort 5d
+      effort 6d
       allocate dev1
     }
     task tcloudDeploy "Cloud deploy" {
-      effort 9d
+      effort 8d
       allocate dev1
-      depends WMGame.tcloud.tcloudDeploy
+      depends WMGame.tcloud.tcloudDecision
     }
   }
 
