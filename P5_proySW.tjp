@@ -19,7 +19,7 @@ project pSix "Web Game"  2024-12-15 +5m {
   # the project reports. If not specified, the current day will be
   # used, but this will likely be outside of the project range, so it
   # can't be seen in the reports.
-  now 2025-02-25-13:00
+  now 2025-04-11-15:30
   # The currency for all money values is the US Dollar.
   currency "EUR"
 
@@ -67,6 +67,11 @@ resource dev2 "Samantha Müller" {
 }
 resource dev3 "Peter Green" {
   email "kkk@unizar.es"
+}
+resource you "Alex" {
+  email "874113@unizar.es"
+  workinghours mon - fri 08:00 - 12:00
+  rate 90
 }
 
 # Now we specify the work packages. The whole project is described as
@@ -120,6 +125,30 @@ task WMGame "Web & Mobile Game" {
     }
   }
 
+  task tmobileF "Mobile Front End" {
+    purge chargeset
+    chargeset mFront
+    responsible dev3
+    depends WMGame.tGUId
+
+    task tmGUId "Mobile GUI Design" {
+      effort 6d
+      allocate dev3
+    }
+
+    task tmFEc "Mobile Front End Construction" {
+      effort 10d
+      allocate dev3, you
+      depends WMGame.tmobileF.tmGUId
+    }
+
+    task tmFEt "Mobile Front End Test" {
+      effort 5d
+      allocate dev1
+      depends WMGame.tmobileF.tmFEc
+    }
+  }
+
   task twebF "Web Front End" {
     purge chargeset
     chargeset wFront
@@ -144,7 +173,12 @@ task WMGame "Web & Mobile Game" {
       effort 6d
       allocate dev1
       depends WMGame.twebF.tFEc
-    }    
+      journalentry 2025-04-11 "Revisión de diseño móvil" {
+        author you
+        alert green
+        summary "Hoy se ha revisado el diseño móvil con mejoras propuestas para navegación táctil."
+      }
+    }
   }
 
   task ttest "Acceptance tests" {
@@ -152,8 +186,11 @@ task WMGame "Web & Mobile Game" {
       allocate boss
       allocate dev2
       actual:effort 20d
+      start 2025-05-15
       depends WMGame.twebF
       depends WMGame.tback
+      depends WMGame.tmobileF
+      depends WMGame.tCloud
       }
 
     
@@ -180,6 +217,23 @@ task WMGame "Web & Mobile Game" {
     task done "Ship Product to Customer" {
       depends WMGame.ttest
       charge 12000.0 onstart
+    }
+  }
+
+  task tCloud "Cloud Deployment" {
+    chargeset back
+    responsible dev1
+    depends WMGame.tback.tbackDev
+
+    task tCloudEval "Cloud Provider Evaluation" {
+      effort 3d
+      allocate boss
+    }
+
+    task tCloudSet "Cloud Setup and Deployment" {
+      effort 6d
+      allocate dev1, you
+      depends WMGame.tCloud.tCloudEval
     }
   }
 }
@@ -352,3 +406,11 @@ resourcereport resourceGraph "" {
   hidetask ~(isleaf() & isleaf_())
   sorttasks plan.start.up
 }
+
+taskreport initialplan "" {
+  headline "Initial Baseline Plan"
+  scenarios plan
+  columns bsi, name, start, end, effort, chart
+  caption 'Planificación inicial basada en el escenario plan.'
+}
+
